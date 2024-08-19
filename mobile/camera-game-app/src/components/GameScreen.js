@@ -1,4 +1,5 @@
 import React from 'react';
+import { fetchScore, uploadImage } from '../api';
 import Webcam from 'react-webcam';
 import ScoreBoard from './ScoreBoard';
 
@@ -7,11 +8,7 @@ function GameScreen() {
 
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
-    fetch('/api/upload', {
-      method: 'POST',
-      body: JSON.stringify({ image: imageSrc }),
-      headers: { 'Content-Type': 'application/json' }
-    });
+    uploadImage(imageSrc);
   }, [webcamRef]);
 
   return (

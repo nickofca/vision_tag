@@ -1,15 +1,7 @@
 import React from 'react';
 import { useQuery } from 'react-query';
+import {fetchScore} from "../api";
 
-function fetchScore() {
-  // Replace with your actual API endpoint
-  return fetch('/api/score')
-    .then(response => response.json())
-    .catch(error => {
-      console.error('Error fetching score:', error);
-      return { score: 0 }; // Default score in case of error
-    });
-}
 
 function ScoreBoard() {
   // Using react-query to fetch the latest score
