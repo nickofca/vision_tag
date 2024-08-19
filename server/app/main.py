@@ -1,123 +1,53 @@
-import torch
-from sam2.sam2_image_predictor import SAM2ImagePredictor
-from fastapi import FastAPI, File, UploadFile, Form
-from pydantic import BaseModel
-from typing import Optional, Union
-from io import BytesIO
-from PIL import Image
-from PIL.Image import Image as PILImage
-from model import show_masks
-import numpy as np
-from yolov5.models.common import Detections
+import logging
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.exceptions import ResponseValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from routes import router as api_router
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 app = FastAPI()
 
-class NumberRequest(BaseModel):
-    number: int
+origins = [
+    "http://localhost:3000",
+    # Add more origins as needed
+]
 
-class NumberResponse(BaseModel):
-    result: int
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.post("/add/")
-async def add_number(request: NumberRequest) -> NumberResponse:
-    result = request.number + 8
-    return NumberResponse(result=result)
+@app.middleware("http")
+async def verify_mobile_app(request: Request, call_next):
+    try:
+        # Example: Check for a specific header that only your mobile app sends
+        if "X-Mobile-App" in request.headers:
+            # Perform additional checks if needed (e.g., verify tokens, etc.)
+            pass
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        if isinstance(e, ResponseValidationError):
+            # Access the body of the error
+            error_body = f"Error occurred: {e.body}"
+            logger.error(error_body)
+            raise HTTPException(status_code=400, detail=error_body)
+        else:
+            logger.error(f"Unexpected error: {str(e)}")
+            raise HTTPException(status_code=500, detail="Internal Server Error")
 
+# Registering the API routes
+app.include_router(api_router, prefix="/api/v1")
 
-class ImageMetadata(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the game API!"}
 
-@app.post("/predict_sam/")
-async def predict(
-    file: UploadFile = File(...),
-    title: str = Form(...),
-    description: Optional[str] = Form(None)
-):
-    if False: #torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
-
-    predictor = SAM2ImagePredictor.from_pretrained("facebook/sam2-hiera-tiny",
-                                                   device=device)
-
-    with torch.inference_mode(), torch.autocast("cuda", dtype=torch.bfloat16):
-        content = await file.read()  # Read the contents of the UploadFile
-        file_like_object = BytesIO(content)  # Create a BytesIO object
-        img = Image.open(file_like_object).convert("RGB")
-        predictor.set_image(img)
-
-        input_point = np.array([[round(img.size[0]/2),
-                                 round(img.size[1]/2)]])
-        input_label = np.array([1])
-
-        masks, scores, logits = predictor.predict(
-            point_coords=input_point,
-            point_labels=input_label,
-            multimask_output=True,
-        )
-        sorted_ind = np.argsort(scores)[::-1]
-        masks = masks[sorted_ind]
-        scores = scores[sorted_ind]
-        logits = logits[sorted_ind]
-
-        show_masks(img, masks, scores, point_coords=input_point, input_labels=input_label, borders=True)
-
-        print("done")
-
-
-async def yolo_predict(
-    img: Union[PILImage, np.ndarray],
-):
-    if torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
-
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, device=device)
-
-    with (torch.inference_mode(), torch.autocast("cuda", dtype=torch.bfloat16)):
-        return model(img)
-
-
-async def yolo_scoring(
-    results: Detections,
-):
-    # Parse results
-    results_df = results.pandas().xyxy[0]
-
-    # If no detected objects, report a miss
-    if results_df.shape[0] == 0:
-        return False
-
-
-    # Check for objects overlapping centerpoint
-    mid_x, mid_y = list(map(lambda x: round(x/2), results.ims[0].shape[0:2]))
-    centered_objects_df = results_df.loc[(results_df.xmin < mid_x) & (results_df.xmax > mid_x) & (results_df.ymin < mid_y) & (results_df.ymax > mid_y)]
-
-    # If no hit objects, report a miss
-    if centered_objects_df.shape[0] == 0:
-        return False
-
-    return bool(centered_objects_df["class"][0] == 0) # Alias for "person" class
-
-
-@app.post("/score_shot/")
-async def score_shot_yolo(
-    file: UploadFile = File(...),
-    title: str = Form(...),
-    description: Optional[str] = Form(None)
-):
-    # Process image data
-    content = await file.read()  # Read the contents of the UploadFile
-    file_like_object = BytesIO(content)  # Create a BytesIO object
-    img = Image.open(file_like_object).convert("RGB")
-
-    # Perform YOLO predictions
-    results = await yolo_predict(img)
-
-    # Score YOLO predictions
-    score_bool = await yolo_scoring(results)
-
-    return {"hit": int(score_bool)}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
