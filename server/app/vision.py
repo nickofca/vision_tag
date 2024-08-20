@@ -50,4 +50,4 @@ async def yolo_scoring(
     if centered_objects_df.shape[0] == 0:
         return False
 
-    return bool(centered_objects_df["class"].iloc[0] == 0) # Alias for "person" class
+    return (centered_objects_df["class"] == 0).any() # Alias for "person" class
