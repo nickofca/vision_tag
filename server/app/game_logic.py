@@ -2,6 +2,10 @@ from fastapi import WebSocket, WebSocketDisconnect
 from typing import Dict
 from schemas import UserResponse, Player
 import uuid
+import logging
+
+from server.app.vision import process_image
+from vision import predict, yolo_scoring
 
 
 class BaseGame:
@@ -32,6 +36,10 @@ class BaseGame:
     async def update_score(self, player_id: str, score_delta: int):
         if player_id in self.players:
             self.players[player_id].score += score_delta
+            if score_delta > 0:
+                logging.info(f"{player_id} scored {score_delta} points.")
+            elif score_delta < 0:
+                logging.info(f"{player_id} lost {-score_delta} points.")
             await self.publish_event(UserResponse(type="ScoreUpdate", status=200, payload=self.user_score_dict))
 
     async def publish_event(self, response: UserResponse):
@@ -47,5 +55,10 @@ class BasicShooter(BaseGame):
     async def process_action(self, player_id: str, action_type: str, data: Dict):
         # Example of processing different actions
         if action_type == "SubmittedShot":
-            await self.update_score(player_id, 10)
-
+            image = await process_image(data["image"])
+            results = await predict(image)
+            if await yolo_scoring(results):
+                logging.info(f"{player_id} hit a shot")
+                await self.update_score(player_id, 10)
+            else:
+                logging.info(f"{player_id} missed a shot")
