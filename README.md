@@ -8,3 +8,6 @@
 5. Implement lobby
 6. Implement Kubernetes + convert TLS at ingress controller level
 7. Private lobbies
+8. Exit game button
+9. Timed match
+10. Mask filtering
