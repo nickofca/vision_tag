@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { signupUser, loginUser, createGame, joinGame } from '../api';
+import { signupUser, loginUser, createGame, joinGame, logoutUser } from '../api';
+
 
 function MenuScreen({ onStart }) {
   const [username, setUsername] = useState('');
@@ -8,6 +9,7 @@ function MenuScreen({ onStart }) {
   const [token, setToken] = useState(localStorage.getItem('sessionToken'));
   const [gameId, setGameId] = useState('');
   const [isSignup, setIsSignup] = useState(false);
+
 
   useEffect(() => {
     const storedToken = localStorage.getItem('sessionToken');
@@ -28,29 +30,29 @@ function MenuScreen({ onStart }) {
 
   const handleLogin = async () => {
     try {
-      const userData = await loginUser(username, password);
-      console.log('User logged in:', userData);
-      if (userData.token) {
-        setToken(userData.token);
-        localStorage.setItem('sessionToken', userData.token);
-      }
+      const token = await loginUser(username, password);
+      setToken(token);
     } catch (error) {
       console.error('Failed to log in:', error);
     }
   };
 
-  const handleSignOut = () => {
-    setToken(null);
-    localStorage.removeItem('sessionToken');
+  const handleSignOut = async () => {
+    try {
+      if (token) {
+        await logoutUser(token);
+      }
+      setToken(null);
+      localStorage.removeItem('sessionToken');
+    } catch (error) {
+      console.error('Failed to log out:', error);
+    }
   };
 
   const handleCreateGame = () => {
     try {
       const ws = createGame(token);
-      ws.onmessage = (event) => {
-        console.log('Game created:', event.data);
-        onStart();
-      };
+      onStart(ws);  // Pass WebSocket instance to App component via onStart
     } catch (error) {
       console.error('Failed to create game:', error);
     }
@@ -60,8 +62,7 @@ function MenuScreen({ onStart }) {
     try {
       const ws = joinGame(gameId, token);
       ws.onmessage = (event) => {
-        console.log('Joined game:', event.data);
-        onStart();
+      onStart(ws);  // Pass WebSocket instance to App component via onStart
       };
     } catch (error) {
       console.error('Failed to join game:', error);

@@ -1,22 +1,24 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-// Fetch scoreboard data
-export const fetchScore = () => {
-  return fetch(`${API_BASE_URL}/scoreboard`)
-    .then(response => response.json());
-};
 
 // Upload image to the server
-export const uploadImage = (imageSrc, token) => {
-  return fetch(`${API_BASE_URL}/score_shot`, {
-    method: 'POST',
-    body: JSON.stringify({ image: imageSrc }),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`  // Include token for authenticated requests
-    },
+export const uploadImage = (websocket, imageSrc, token) => {
+  // Construct the action data as a JSON object
+  const actionData = {
+    image: imageSrc,
+  };
+
+  // Construct the message to be sent
+  const message = JSON.stringify({
+    token: token,
+    type: "SubmittedShot",
+    payload: JSON.stringify(actionData), // Convert actionData to JSON string
   });
+
+  // Send the message over the WebSocket
+  websocket.send(message);
 };
+
 
 // Sign up a new user
 export const signupUser = (username, email, password) => {
@@ -47,11 +49,11 @@ export const loginUser = (username, password) => {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.token) {
+    if (data.payload.token) {
       // Store the token in memory or local storage
-      localStorage.setItem('sessionToken', data.token);
+      localStorage.setItem('sessionToken', data.payload.token);
     }
-    return data;
+    return data.payload.token;
   });
 };
 
@@ -67,47 +69,38 @@ export const logoutUser = (token) => {
 };
 
 // Create a new game using WebSocket
-export const createGame = (token) => {
-  const ws = new WebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/create_game/?token=${token}`);
+export const initiateWebSocket = (web_socket_url) => {
+  const ws = new WebSocket(web_socket_url);
 
-  ws.onopen = () => {
-    console.log('WebSocket connected for game creation');
-  };
+  // Connection opened
+  ws.addEventListener("open", event => {
+    ws.send("Connection established")
+  });
 
-  ws.onmessage = (event) => {
-    console.log('Message from server:', event.data);
-  };
+  // Listen for messages
+  ws.addEventListener("message", event => {
+    console.log("Message from server ", event.data)
+  });
 
-  ws.onclose = () => {
+  // Convert ws.onclose to addEventListener
+  ws.addEventListener("close", () => {
     console.log('WebSocket closed');
-  };
+  });
 
-  ws.onerror = (error) => {
+  // Convert ws.onerror to addEventListener
+  ws.addEventListener("error", (error) => {
     console.error('WebSocket error:', error);
-  };
+  });
 
   return ws;
 };
 
 // Join an existing game using WebSocket
 export const joinGame = (gameId, token) => {
-  const ws = new WebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`);
+  return initiateWebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`);
+};
 
-  ws.onopen = () => {
-    console.log('WebSocket connected for joining game');
-  };
-
-  ws.onmessage = (event) => {
-    console.log('Message from server:', event.data);
-  };
-
-  ws.onclose = () => {
-    console.log('WebSocket closed');
-  };
-
-  ws.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
-
-  return ws;
+// Create new game using WebSocket
+export const createGame = (token) => {
+  return initiateWebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/create_game/?token=${token}`);
 };

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-
+from typing import Dict
 
 class UserBase(BaseModel):
     username: str
@@ -13,9 +13,14 @@ class UserLogin(BaseModel):
     password: str
 
 class UserResponse(BaseModel):
-    status: str
-    data: str
+    type: str
+    status: int
+    payload: dict
 
     class Config:
         orm_mode = True
         extra = "allow"
+
+class Player(BaseModel):
+    player_id: str
+    score: int = 0
