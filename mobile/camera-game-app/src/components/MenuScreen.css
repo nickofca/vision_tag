@@ -1,0 +1,37 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Three columns in the grid */
+    grid-gap: 20px;  /* Space between grid items */
+    justify-items: center;  /* Center items horizontally */
+    align-items: center;  /* Center items vertically */
+    height: 60vh;  /* Full viewport height */
+    border: none;
+}
+
+.disabled-game-type-button {
+    cursor: not-allowed;
+    opacity: 0.5; /* Optional: Makes the button look disabled */
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    text-align: center;
+}
+
+.game-type-button {
+    background-color: transparent;
+    border: none;
+    padding: 10px;
+    text-align: center; /* Center the text and image */
+}
+
+.button-content {
+    display: flex;
+    flex-direction: column; /* Stack the image and text vertically */
+    align-items: center; /* Center the content horizontally */
+}
+
+.button-content span {
+    margin-top: 8px; /* Add space between the image and the text */
+    font-size: 14px; /* Adjust the text size as needed */
+    color: #000; /* Adjust the text color as needed */
+}
