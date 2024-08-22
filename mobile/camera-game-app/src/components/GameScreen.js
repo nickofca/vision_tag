@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { uploadImage } from "../api";
+import "./GameScreen.css"
 
 function GameScreen({ websocket, setStartGame }) {
   const webcamRef = React.useRef(null);
@@ -31,17 +32,18 @@ function GameScreen({ websocket, setStartGame }) {
         }
       };
     }
-  }, []);
+  }, [websocket]);
 
   return (
-    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <div className={"container"}>
       <Webcam
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
-        style={{ width: '100%', height: '100%' }}
+        className={"container__webcam"}
       />
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '20px', height: '20px', backgroundColor: 'red', borderRadius: '50%' }} />
+      <div className={"container__crosshair"} />
+
       <ScoreBoard scores={scores} />
 
       <button onClick={handleEject} className={"button--eject"}>Eject</button>
@@ -52,9 +54,9 @@ function GameScreen({ websocket, setStartGame }) {
 
 function ScoreBoard({ scores }) {
   return (
-    <div style={{ position: 'absolute', top: 20, right: 20, backgroundColor: 'rgba(0, 0, 0, 0.7)', color: 'white', padding: '10px', borderRadius: '8px' }}>
+    <div className={"container__scoreboard"}>
       <h3>Scores</h3>
-      <ul>
+      <ul className={"container__scoreboard__list"}>
         {Object.entries(scores).map(([player, score]) => (
           <li key={player}>{player}: {score}</li>
         ))}
