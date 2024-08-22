@@ -62,3 +62,38 @@ class BasicShooter(BaseGame):
                 await self.update_score(player_id, 10)
             else:
                 logging.info(f"{player_id} missed a shot")
+
+
+class FirstShot(BaseGame):
+    def __init__(self):
+        super().__init__()
+        self.respawn_state: Dict[str, bool] = {}
+        self.respawn_object_class: Dict[str, int]  = {}
+        self.all_respawn()
+
+    async def add_respawn_class(self, player_id: str, respawn_object_class: int):
+        self.respawn_object_class[player_id] = respawn_object_class
+
+    def all_respawn(self):
+        self.respawn_state = dict.fromkeys(self.players, True)
+
+    async def add_player(self, player_id: str, websocket: WebSocket):
+        await super().add_player(player_id, websocket)
+        self.respawn_state[player_id] = True
+
+    async def process_action(self, player_id: str, action_type: str, data: Dict):
+        # Example of processing different actions
+        if action_type == "SubmittedShot":
+            image = await process_image(data["image"])
+            results = await predict(image)
+            if not self.respawn_state[player_id] and await yolo_scoring(results, 0):
+                self.all_respawn()
+                await self.publish_event(UserResponse(type="GameStateUpdate", status=200, payload={"GameState": "respawn"}))
+                await self.update_score(player_id, 10)
+                logging.info(f"{player_id} hit a shot")
+            elif self.respawn_state[player_id] and await yolo_scoring(results,
+                                                                      self.respawn_object_class[player_id]):
+                self.respawn_state[player_id] = False
+                logging.info(f"{player_id} respawned")
+            else:
+                logging.info(f"{player_id} missed a shot")
