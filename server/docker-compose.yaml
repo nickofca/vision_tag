@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app-cuda:
+    image: vision-tag-cuda
+    build:
+      context: .
+      dockerfile: Dockerfile.cuda
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      replicas: 0  # Start with 0 replicas unless explicitly chosen
+    ports:
+      - "8000:8000"
+
+  app-cpu:
+    image: vision-tag-cpu
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+    deploy:
+      replicas: 0  # Start with 0 replicas unless explicitly chosen
+    ports:
+      - "8000:8000"
