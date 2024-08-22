@@ -33,6 +33,7 @@ async def predict(
 
 async def yolo_scoring(
     results: Detections,
+    detected_class: int = 0,    # Alias for "person" class
 ):
     # Parse results
     results_df = results.pandas().xyxy[0]
@@ -40,7 +41,6 @@ async def yolo_scoring(
     # If no detected objects, report a miss
     if results_df.shape[0] == 0:
         return False
-
 
     # Check for objects overlapping centerpoint
     mid_x, mid_y = list(map(lambda x: round(x/2), results.ims[0].shape[0:2]))
@@ -50,4 +50,4 @@ async def yolo_scoring(
     if centered_objects_df.shape[0] == 0:
         return False
 
-    return (centered_objects_df["class"] == 0).any() # Alias for "person" class
+    return (centered_objects_df["class"] == detected_class).any()
