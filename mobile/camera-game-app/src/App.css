@@ -21,3 +21,66 @@
   padding: 10px; /* Optional: Padding inside the element */
   border-radius: 5px; /* Optional: Rounded corners */
 }
+
+/* Input Field Styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  display: block; /* Ensures the margin auto centers the input */
+  width: 80%; /* Adjust the width as needed */
+  max-width: 400px; /* Maximum width for larger screens */
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #f8f8f8;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Input Focus State */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  border-color: #66afe9;
+  background-color: #fff;
+  outline: none;
+}
+
+/* Placeholder Styling */
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+/* Disabled Input Styling */
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+input[type="password"]:disabled,
+textarea:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+/* Error State Styling */
+input[type="text"].error,
+input[type="email"].error,
+input[type="password"].error,
+textarea.error {
+  border-color: #e74c3c;
+  background-color: #fbe9e7;
+}
+
+input[type="text"].error:focus,
+input[type="email"].error:focus,
+input[type="password"].error:focus,
+textarea.error:focus {
+  border-color: #e74c3c;
+  background-color: #fff5f3;
+}
