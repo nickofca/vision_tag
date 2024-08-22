@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App">
       {gameStarted ? (
-        <GameScreen websocket={websocket} />
+        <GameScreen websocket={websocket} setStartGame={setGameStarted} />
       ) : (
         <MenuScreen onStart={handleStart} />
       )}

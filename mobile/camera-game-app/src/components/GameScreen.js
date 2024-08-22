@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { uploadImage } from "../api";
 
-function GameScreen({ websocket }) {
+function GameScreen({ websocket, setStartGame }) {
   const webcamRef = React.useRef(null);
   const [scores, setScores] = useState({});  // State to hold the score data
 
@@ -11,6 +11,15 @@ function GameScreen({ websocket }) {
     const token = localStorage.getItem('sessionToken');
     uploadImage(websocket, imageSrc, token);
   }, [webcamRef, websocket]);
+
+  const handleEject = useCallback(() => {
+    setStartGame(false); // Set the game status to false
+    if (websocket) {
+      websocket.close(); // Close the WebSocket connection
+      // Send exit game message to server (if needed)
+      websocket.send(JSON.stringify({ type: 'ExitGame' }));
+    }
+  }, [websocket, setStartGame]);
 
   useEffect(() => {
     if (websocket) {
@@ -34,7 +43,9 @@ function GameScreen({ websocket }) {
       />
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '20px', height: '20px', backgroundColor: 'red', borderRadius: '50%' }} />
       <ScoreBoard scores={scores} />
-      <button onClick={capture} style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)' }}>Take Picture</button>
+
+      <button onClick={handleEject} className={"button--eject"}>Eject</button>
+      <button onClick={capture} className={"button--capture"}></button>
     </div>
   );
 }
