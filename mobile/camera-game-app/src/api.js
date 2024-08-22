@@ -96,7 +96,7 @@ export const initiateWebSocket = (web_socket_url) => {
 };
 
 // Join an existing game using WebSocket
-export const joinGame = (gameId, token) => {
+export const joinGame = (token, gameId) => {
   return initiateWebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`);
 };
 
