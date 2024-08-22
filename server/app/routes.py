@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Depends
 from auth import register_user, authenticate_user, token_required, logout, generate_token, decode_token
 from schemas import UserCreate, UserLogin, UserResponse
-from game_logic import BasicShooter
+from game_logic import BasicShooter, FirstShot
 import json
 import logging
 
@@ -10,8 +10,8 @@ router = APIRouter()
 connected_clients = []
 games = {}
 
-@router.websocket("/ws/create_game/")
-async def websocket_create_game(websocket: WebSocket):
+@router.websocket("/ws/create_game/{game_mode}")
+async def websocket_create_game(websocket: WebSocket, game_mode: str):
     # Authenticate
     token = websocket.query_params.get('token')
     try:
@@ -25,23 +25,27 @@ async def websocket_create_game(websocket: WebSocket):
     await websocket.accept()
 
     try:
+        # Parse the connection received message
+        logging.info(f"{player_id} - {await websocket.receive()}")
         # Initiate game
-        game = BasicShooter()
-        games[game.game_id] = game
-        message = json.dumps({"status": "200",
-                              "data": {"message": "Game created",
-                                       "game_id": game.game_id}})
-        await websocket.send_text(message)
+        if game_mode == "BasicShooter":
+            game = BasicShooter()
+        elif game_mode == "FirstShot":
+            game = FirstShot()
+            respawn_object_class = 0    # TODO: Add input from client
+            await game.add_respawn_class(player_id, respawn_object_class)
+        else:
+            raise HTTPException(status_code=400, detail="Invalid game type received")
+
         # Add player to game with websocket to publish events
         await game.add_player(player_id, websocket)
+        # Add game to server
+        games[game.game_id] = game
 
         while True:
             # Listen for events
             message = await websocket.receive()
-            # Check for authorization
-            if message["text"] == "Connection established":
-                logging.info(f"Connection established - {websocket.client.host}")
-                continue
+            # Process standard response
             response_dict = json.loads(message["text"])
             payload = json.loads(response_dict["payload"])
             # Confirm token
