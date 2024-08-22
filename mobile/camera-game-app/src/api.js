@@ -101,6 +101,6 @@ export const joinGame = (token, gameId) => {
 };
 
 // Create new game using WebSocket
-export const createGame = (token) => {
-  return initiateWebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/create_game/?token=${token}`);
+export const createGame = (token, gameType) => {
+  return initiateWebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws/create_game/${gameType}?token=${token}`);
 };
