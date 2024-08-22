@@ -99,9 +99,9 @@ class FirstShot(BaseGame):
                 # Initiate action for specified player
                 self.respawn_state[player_id] = False
                 # Send action notice
-                await self.sockets[player_id].send_json(UserResponse(type="GameStateUpdate",
+                await self.sockets[player_id].send_json(dict(UserResponse(type="GameStateUpdate",
                                                                status=200,
-                                                               payload={"GameState": "action"}))
+                                                               payload={"GameState": "action"})))
                 logging.info(f"{player_id} respawned")
             else:
                 logging.info(f"{player_id} missed a shot")
