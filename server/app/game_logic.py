@@ -87,13 +87,21 @@ class FirstShot(BaseGame):
             image = await process_image(data["image"])
             results = await predict(image)
             if not self.respawn_state[player_id] and await yolo_scoring(results, 0):
+                # Initiate a respawn for all players
                 self.all_respawn()
+                # Publish respawn notice
                 await self.publish_event(UserResponse(type="GameStateUpdate", status=200, payload={"GameState": "respawn"}))
+                # Update score
                 await self.update_score(player_id, 10)
                 logging.info(f"{player_id} hit a shot")
             elif self.respawn_state[player_id] and await yolo_scoring(results,
                                                                       self.respawn_object_class[player_id]):
+                # Initiate action for specified player
                 self.respawn_state[player_id] = False
+                # Send action notice
+                await self.sockets[player_id].send_json(UserResponse(type="GameStateUpdate",
+                                                               status=200,
+                                                               payload={"GameState": "action"}))
                 logging.info(f"{player_id} respawned")
             else:
                 logging.info(f"{player_id} missed a shot")
