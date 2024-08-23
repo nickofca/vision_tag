@@ -4,8 +4,7 @@ from schemas import UserResponse, Player
 import uuid
 import logging
 
-from server.app.vision import process_image
-from vision import predict, yolo_scoring
+from vision import predict, yolo_scoring, process_image
 
 
 class BaseGame:
