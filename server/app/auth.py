@@ -4,30 +4,71 @@ import jwt
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Union
+import os
+import boto3
 
 
-SECRET_KEY = 'your_secret_key'  # TODO: Move to secrets
+# Fetch AWS credentials from environment variables
+aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+aws_region = os.environ.get('AWS_REGION')
+secret_hash_key = os.environ.get('HASH_KEY') # TODO: Move to secrets
+
+
+# Initialize a session using environment variables
+dynamodb = boto3.resource(
+    'dynamodb',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name=aws_region
+)
+
+# Select your DynamoDB table
+users_table = dynamodb.Table('users')
+
 
 # Example user storage (in memory for simplicity)
-users_db = {"a": "scrypt:32768:8:1$W9fCt62PWxsB8Hna$f9e7175db76a6ddd563ab9625c2a263811d162e0d56579362be3727755cd3b305bb85f1a48d9ab0f6f89ecd85ccd956f1d4e1b6f9d97eec2531854f34fee5e60"}   # TODO: Set up table in PostgreSQL
 revoked_tokens = set()  # TODO: Set up table in redis
 
 
-def register_user(player_id, password):
-    if player_id in users_db:
-        return 'User already exists'
+def register_user(player_id, password, email):
+    # Check if the user already exists
+    response = users_table.get_item(
+        Key={'username': player_id}
+    )
+
+    if 'Item' in response:
+        raise Exception('User already exists')
+
+    # Hash the password
     hashed_password = generate_password_hash(password)
-    users_db[player_id] = hashed_password
-    return 'User registered successfully'
+
+    # Register the new user in the DynamoDB table
+    users_table.put_item(
+        Item={
+            'username': player_id,
+            'password': hashed_password,
+            'email': email
+        }
+    )
 
 
 def authenticate_user(player_id, password):
-    if player_id not in users_db:
-        return None
-    hashed_password = users_db[player_id]
+    # Fetch the user data from the DynamoDB table
+    response = users_table.get_item(
+        Key={'username': player_id}
+    )
+
+    # Check if the user exists
+    if 'Item' not in response:
+        return None  # User not found
+
+    # Retrieve the hashed password from the stored item
+    hashed_password = response['Item'].get('password')
+
+    # Check if the provided password matches the hashed password
     if check_password_hash(hashed_password, password):
         return player_id  # Authentication successful
-    return None  # Authentication failed
 
 
 def generate_token(player_id):
@@ -35,7 +76,7 @@ def generate_token(player_id):
         'player_id': player_id,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Token expires in 1 hour
     }
-    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    token = jwt.encode(payload, secret_hash_key, algorithm='HS256')
     return token
 
 
@@ -51,7 +92,7 @@ async def token_required(token: HTTPAuthorizationCredentials = Depends(security)
 
 def decode_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, secret_hash_key, algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:

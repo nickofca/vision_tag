@@ -90,7 +90,7 @@ async def websocket_join_game(websocket: WebSocket, game_id: int):
 async def signup_endpoint(data: UserCreate):
     """Sign up a new user."""
     try:
-        confirmation_message = register_user(data.username, data.password)
+        register_user(data.username, data.password, data.email)
         return UserResponse(type="Authorization", status=200, payload={"message": "User registration successful."})
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
