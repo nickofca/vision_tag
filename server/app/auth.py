@@ -4,38 +4,31 @@ import jwt
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
-import os
 import boto3
 
+def retrieve_secret_hash_key(session):
+    # Create a Secrets Manager client
+    client = session.client('secretsmanager')
 
-# Fetch AWS credentials from environment variables
-aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
-aws_region = os.environ.get('AWS_REGION')
+    # Retrieve the secret
+    response = client.get_secret_value(SecretId="TokenEncryptionKey")
+
+    # Parse the secret
+    return json.loads(response['SecretString'])
 
 
-# Initialize a session using environment variables
-dynamodb = boto3.resource(
-    'dynamodb',
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key,
-    region_name=aws_region
-)
+def retrieve_user_table(session):
+    # Initialize DynamoDB resource
+    dynamodb = session.resource('dynamodb')
 
-# Select your DynamoDB table
-users_table = dynamodb.Table('users')
+    # Specify the DynamoDB table
+    return dynamodb.Table('users')
 
-# Create a session using the EC2 instance's IAM role
-session = boto3.Session()
+# Create a session with available IAM
+session = boto3.Session()   # Developers sign into IAM with AWS CLI
+secret_hash_key = retrieve_secret_hash_key(session)
+users_table = retrieve_user_table(session)
 
-# Create a Secrets Manager client
-client = session.client('secretsmanager')
-
-# Retrieve the secret
-response = client.get_secret_value(SecretId="TokenEncryptionKey")
-
-# Parse the secret
-secret_hash_key = json.loads(response['SecretString'])
 
 # Example user storage (in memory for simplicity)
 revoked_tokens = set()  # TODO: Set up table in redis
