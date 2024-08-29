@@ -75,6 +75,7 @@ class FirstShot(BaseGame):
 
     def all_respawn(self):
         self.respawn_state = dict.fromkeys(self.players, True)
+        # TODO: Add publication of respawn
 
     async def add_player(self, player_id: str, websocket: WebSocket):
         await super().add_player(player_id, websocket)
@@ -85,6 +86,7 @@ class FirstShot(BaseGame):
         if action_type == "SubmittedShot":
             image = await process_image(data["image"])
             results = await predict(image)
+            # If players are in action, check for a hit
             if not self.respawn_state[player_id] and await yolo_scoring(results, 0):
                 # Initiate a respawn for all players
                 self.all_respawn()
@@ -93,6 +95,7 @@ class FirstShot(BaseGame):
                 # Update score
                 await self.update_score(player_id, 10)
                 logging.info(f"{player_id} hit a shot")
+            # If players are in respawn, check for a successful respawn
             elif self.respawn_state[player_id] and await yolo_scoring(results,
                                                                       self.respawn_object_class[player_id]):
                 # Initiate action for specified player
