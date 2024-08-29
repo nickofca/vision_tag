@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from typing import Union
+import json
 import os
 import boto3
 
@@ -12,7 +12,6 @@ import boto3
 aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
 aws_region = os.environ.get('AWS_REGION')
-secret_hash_key = os.environ.get('HASH_KEY') # TODO: Move to secrets
 
 
 # Initialize a session using environment variables
@@ -26,6 +25,17 @@ dynamodb = boto3.resource(
 # Select your DynamoDB table
 users_table = dynamodb.Table('users')
 
+# Create a session using the EC2 instance's IAM role
+session = boto3.Session()
+
+# Create a Secrets Manager client
+client = session.client('secretsmanager')
+
+# Retrieve the secret
+response = client.get_secret_value(SecretId="TokenEncryptionKey")
+
+# Parse the secret
+secret_hash_key = json.loads(response['SecretString'])
 
 # Example user storage (in memory for simplicity)
 revoked_tokens = set()  # TODO: Set up table in redis
