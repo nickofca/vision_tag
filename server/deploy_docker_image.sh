@@ -15,7 +15,28 @@ sudo apt-get install -y podman
 
 # Pull the container image from ECR using Podman
 sudo aws ecr get-login-password --region us-east-1 | podman login --username AWS --password-stdin 732284202021.dkr.ecr.us-east-1.amazonaws.com
-podman pull 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
 
 # Run the container using Podman
-podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+sudo podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+
+# Path to rc.local
+RC_LOCAL="/etc/rc.local"
+
+# Commands to be added to rc.local
+COMMANDS=$(cat <<EOF
+# Kill existing pods
+sudo podman container prune
+
+# Pull the container image from ECR using Podman
+sudo aws ecr get-login-password --region us-east-1 | podman login --username AWS --password-stdin 732284202021.dkr.ecr.us-east-1.amazonaws.com
+
+# Run the container using Podman
+sudo podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+
+# Close out
+exit 0
+EOF
+)
+
+echo "$COMMANDS" | sudo tee -a $RC_LOCAL > /dev/null
+sudo chmod +x $RC_LOCAL
