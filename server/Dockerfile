@@ -53,4 +53,5 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/workspace/app
 
 # Command to run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN openssl req -x509 -newkey rsa:4096 -keyout /workspace/key.pem -out /workspace/cert.pem -days 365 -nodes -subj "/C=US/ST=Colorado/L=City/O=Organization/OU=Department/CN=visiontag"
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile=/workspace/key.pem", "--ssl-certfile=/workspace/cert.pem"]
