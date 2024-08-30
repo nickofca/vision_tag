@@ -25,7 +25,7 @@ def retrieve_user_table(session):
     return dynamodb.Table('users')
 
 # Create a session with available IAM
-session = boto3.Session()   # Developers sign into IAM with AWS CLI
+session = boto3.Session(region_name='us-east-1')   # Developers sign into IAM with AWS CLI
 secret_hash_key = retrieve_secret_hash_key(session)
 users_table = retrieve_user_table(session)
 
