@@ -139,12 +139,12 @@ function MenuScreen({ onStart }) {
                     {isSignup ? (
                         <>
                           Already have an account?{' '}
-                          <a href="#" onClick={() => setIsSignup(false)}>Login</a>
+                          <a href="#" onClick={() => setIsSignup(false)} style={{ color: "grey" }}>Login</a>
                         </>
                     ) : (
                         <>
                           Don't have an account?{' '}
-                          <a href="#" onClick={() => setIsSignup(true)}>Sign Up</a>
+                          <a href="#" onClick={() => setIsSignup(true)} style={{ color: "grey" }}>Sign Up</a>
                         </>
                     )}
                   </p>
