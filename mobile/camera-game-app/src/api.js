@@ -73,24 +73,26 @@ export const initiateWebSocket = (web_socket_url) => {
   const ws = new WebSocket(web_socket_url);
 
   // Connection opened
-  ws.addEventListener("open", event => {
-    ws.send("Connection established")
-  });
+  ws.onopen = (event) => {
+    console.log("WebSocket connection established");
+    ws.send("Connection established");
+  };
 
   // Listen for messages
-  ws.addEventListener("message", event => {
-    console.log("Message from server ", event.data)
-  });
+  ws.onmessage = (event) => {
+    console.log("Message from server: ", event.data);
+  };
 
-  // Convert ws.onclose to addEventListener
-  ws.addEventListener("close", () => {
-    console.log('WebSocket closed');
-  });
+  // WebSocket connection closed
+  ws.onclose = (event) => {
+    console.log('WebSocket closed: ', event.code, event.reason);
+    // You can add reconnection logic here if needed
+  };
 
-  // Convert ws.onerror to addEventListener
-  ws.addEventListener("error", (error) => {
-    console.error('WebSocket error:', error);
-  });
+  // WebSocket error handling
+  ws.onerror = (error) => {
+    console.error('WebSocket error: ', error);
+  };
 
   return ws;
 };
