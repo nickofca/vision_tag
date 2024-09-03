@@ -14,7 +14,7 @@ def retrieve_secret_hash_key(session):
     response = client.get_secret_value(SecretId="TokenEncryptionKey")
 
     # Parse the secret
-    return json.loads(response['SecretString'])
+    return json.loads(response['SecretString'])["HASH_KEY"]
 
 
 def retrieve_user_table(session):
