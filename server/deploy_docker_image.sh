@@ -13,30 +13,39 @@ sudo ./aws/install
 # Install Podman
 sudo apt-get install -y podman
 
-# Pull the container image from ECR using Podman
-sudo aws ecr get-login-password --region us-east-1 | podman login --username AWS --password-stdin 732284202021.dkr.ecr.us-east-1.amazonaws.com
 
-# Run the container using Podman
-sudo podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+### Define the service to manage podman deployment
+# Define the service name
+SERVICE_NAME="my-podman-service.service"
 
-# Path to rc.local
-RC_LOCAL="/etc/rc.local"
+# Define the service content
+SERVICE_CONTENT="[Unit]
+Description=Podman Container Management Service
+After=network.target
 
-# Commands to be added to rc.local
-COMMANDS=$(cat <<EOF
-# Kill existing pods
-sudo podman container prune
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/sudo /usr/bin/podman container prune -f
+ExecStartPre=/usr/bin/sudo /bin/sh -c '/usr/local/bin/aws ecr get-login-password --region us-east-1 | /usr/bin/podman login --username AWS --password-stdin 732284202021.dkr.ecr.us-east-1.amazonaws.com'
+ExecStartPre=/usr/bin/sudo /usr/bin/podman pull 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+ExecStart=/usr/bin/sudo /usr/bin/podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+RemainAfterExit=yes
 
-# Pull the container image from ECR using Podman
-sudo aws ecr get-login-password --region us-east-1 | podman login --username AWS --password-stdin 732284202021.dkr.ecr.us-east-1.amazonaws.com
+[Install]
+WantedBy=multi-user.target"
 
-# Run the container using Podman
-sudo podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+# Create the service file
+echo "Creating systemd service file: /etc/systemd/system/$SERVICE_NAME"
+echo "$SERVICE_CONTENT" | sudo tee /etc/systemd/system/$SERVICE_NAME > /dev/null
 
-# Close out
-exit 0
-EOF
-)
+# Reload systemd to recognize the new service
+echo "Reloading systemd daemon..."
+sudo systemctl daemon-reload
 
-echo "$COMMANDS" | sudo tee -a $RC_LOCAL > /dev/null
-sudo chmod +x $RC_LOCAL
+# Enable the service to start on boot
+echo "Enabling $SERVICE_NAME to start on boot..."
+sudo systemctl enable $SERVICE_NAME
+
+# Optionally start the service immediately
+echo "Starting $SERVICE_NAME..."
+sudo systemctl start $SERVICE_NAME
