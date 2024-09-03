@@ -12,6 +12,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://192.168.1.159:3000",
+    "https://34.195.147.13:8000"
     # Add more origins as needed
 ]
 
@@ -47,7 +48,7 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the game API!"}
+    return {"message": "Welcome to the game API"}
 
 if __name__ == "__main__":
     import uvicorn
