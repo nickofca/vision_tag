@@ -118,11 +118,11 @@ async def logout_endpoint(player_id: str = Depends(token_required)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/test/", response_model=UserResponse)
+@router.get("/test/")
 async def test_endpoint():
     """Endpoint to test"""
     try:
-        return UserResponse(type="Test message", status=200, payload={"message": f"Succesfully recieved message"})
+        return {"message": f"Succesfully recieved message"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
