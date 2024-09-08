@@ -9,22 +9,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "http://192.168.1.159:3000",
-    "https://34.195.147.13:8000"
-    # Add more origins as needed
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.middleware("http")
+@app.middleware("https")
 async def verify_mobile_app(request: Request, call_next):
     try:
         # Example: Check for a specific header that only your mobile app sends
