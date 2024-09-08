@@ -1,4 +1,4 @@
-import { signupUser } from "@components/api";
+import { signupUser } from "@services/auth";
 import React, {useState} from "react";
 
 
@@ -39,8 +39,8 @@ export default function SignUpComponent () {
                 <label>I agree with Terms & Conditions!</label>
             </div>
             <button
-                onClick={signupUser(username, email, password)}
-                clickable={agreedToTerms}
+                onClick={async () => { await signupUser(username, email, password); }}
+                disabled={!agreedToTerms}
                 style={{
                     display: 'flex',
                     justifyContent: 'center',

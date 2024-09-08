@@ -17,6 +17,12 @@
       ],
       "@assets/*": [
         "assets/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@screens/*": [
+        "screens/*"
       ]
     }
   },

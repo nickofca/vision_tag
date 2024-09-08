@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { CameraView } from 'expo-camera';
 
 interface CameraViewComponentProps {
-    websocket: WebSocket; // WebSocket passed as a prop
+    websocket: WebSocket | null;
 }
 
 const CameraViewComponent: React.FC<CameraViewComponentProps> = ({ websocket }) => {

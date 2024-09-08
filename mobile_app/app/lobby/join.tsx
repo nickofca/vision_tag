@@ -1,39 +1,67 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { initiateWebSocket } from "@components/archive_api";
+import { tokenStore } from "@services/auth"
+import { useRouter } from 'expo-router'; // Import the router for navigation
 
-import {joinGame} from "@components/api";
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || '';
 
-export default function createGameComponent () {
+const JoinGameComponent: React.FC = () => {
     const [gameId, setGameId] = useState('');
+    const [websocket, setWebsocket] = useState<WebSocket>();
+    const token = tokenStore((state) => state.token); // Access the token from the Zustand store
+    const router = useRouter();
 
+    const handleJoinGame = () => {
+        if (gameId.trim()) {
+            const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`
+            setWebsocket(initiateWebSocket(socket_url));
+            router.replace("game")
+        } else {
+            alert("Please enter a valid Game ID.");
+        }
+    };
 
     return (
-        <>
-            <h1>Join Game</h1>
-            <input
-                type="text"
+        <View style={styles.container}>
+            <Text style={styles.title}>Join Game</Text>
+            <TextInput
+                style={styles.input}
                 placeholder="Enter Game ID"
                 value={gameId}
-                onChange={(e) => setGameId(e.target.value)}
-                style={{marginBottom: '10px', padding: '10px', borderRadius: '5px', width: '80%'}}
+                onChangeText={setGameId} // React Native uses onChangeText for TextInput
             />
-            <button
-                onClick={joinGame}
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: '#000',
-                    color: '#fff',
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    cursor: 'pointer'
-                }}
-            >
-                <span style={{fontSize: '24px'}}>→</span>
-            </button>
-        </>
-    )
-}
+            <Button
+                title="Join"
+                onPress={handleJoinGame}
+                color="#000"
+            />
+        </View>
+    );
+};
+
+export default JoinGameComponent;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    input: {
+        height: 40,
+        borderColor: '#000',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginBottom: 20,
+        width: '80%',
+    },
+});

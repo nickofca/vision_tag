@@ -1,4 +1,4 @@
-import { loginUser } from "@components/api";
+import { loginUser } from "@services/auth";
 import React, {useState} from "react";
 
 
@@ -23,7 +23,9 @@ export default function LoginComponent () {
                 onChange={(e) => setPassword(e.target.value)}
             />
             <button
-                onClick={loginUser(username, password)}
+                onClick={async () => {
+                    await loginUser(username, password);
+                }}
                 style={{
                     display: 'flex',
                     justifyContent: 'center',
