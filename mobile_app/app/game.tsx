@@ -35,7 +35,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ websocket, setStartGame }) => {
 
             <ScoreBoard scores={scores} />
 
-            <EjectButton websocket={websocket} setStartGame={setStartGame} />
+            <EjectButton />
 
             <CameraViewComponent websocket={websocket} />
         </View>

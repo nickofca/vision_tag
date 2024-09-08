@@ -10,11 +10,11 @@ const LobbyMenuComponent: React.FunctionComponent = () => {
             <Text style={styles.title}>Lobby</Text>
             <Button
                 title="Create Game"
-                onPress={() => router.push('/game/create')} // Navigate to /game/create
+                onPress={() => router.push('/lobby/create')} // Navigate to /game/create
             />
             <Button
                 title="Join Game"
-                onPress={() => router.push('/game/join')} // Navigate to /game/join
+                onPress={() => router.push('/lobby/join')} // Navigate to /game/join
             />
         </View>
     );

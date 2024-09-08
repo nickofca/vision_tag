@@ -1,21 +1,20 @@
-// components/EjectButton.tsx
-import React, { useCallback } from "react";
+import React from "react";
 import { Button } from "react-native";
+import { useWebSocketStore } from "@services/socket"; // Make sure this is the correct import path
 
-type EjectButtonProps = {
-    websocket: WebSocket | null;
-    setStartGame: (start: boolean) => void;
-};
+const EjectButton: React.FC = () => {
+    // Correctly select the closeWebSocket function from the Zustand store
+    const closeWebSocket = useWebSocketStore((state) => state.closeWebSocket);
+    const socket = useWebSocketStore((state) => state.socket);
 
-const EjectButton: React.FC<EjectButtonProps> = ({ websocket, setStartGame }) => {
-    const handleEject = useCallback(() => {
-        setStartGame(false); // Set the game status to false
-        if (websocket) {
-            websocket.close(); // Close the WebSocket connection
-            // Send exit game message to server (if needed)
-            websocket.send(JSON.stringify({ type: 'ExitGame' }));
-        }
-    }, [websocket, setStartGame]);
+    // Function to handle the WebSocket close event
+    const handleEject = () => {
+        console.log("handle eject");
+        console.log(socket)
+        closeWebSocket(); // Properly invoke the function
+        console.log("closeWebSocket finished");
+
+    };
 
     return <Button title="Eject" onPress={handleEject} />;
 };

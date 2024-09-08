@@ -51,8 +51,14 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
     closeWebSocket: () => {
         const { socket } = get();
         if (socket) {
-            socket.close(); // This will trigger the onclose event
+            console.log("socket: close start")
+
+            socket.close(); // rThis will trigger the onclose event
+            console.log("socket: close")
+
             set({ socket: null, connected: false, connectionStatus: 'closed' });
+            console.log("zustin object altered")
+
             console.log('WebSocket connection closing.');
         }
     },

@@ -2,21 +2,22 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { initiateWebSocket } from "@components/archive_api";
 import { tokenStore } from "@services/auth"
-import { useRouter } from 'expo-router'; // Import the router for navigation
+import { useRouter } from 'expo-router';
+import {useWebSocketStore} from "@services/socket"; // Import the router for navigation
 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || '';
 
 const JoinGameComponent: React.FC = () => {
     const [gameId, setGameId] = useState('');
-    const [websocket, setWebsocket] = useState<WebSocket>();
+    const initializeWebSocket = useWebSocketStore((state) => state.initializeWebSocket)
     const token = tokenStore((state) => state.token); // Access the token from the Zustand store
     const router = useRouter();
 
     const handleJoinGame = () => {
         if (gameId.trim()) {
             const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`
-            setWebsocket(initiateWebSocket(socket_url));
+            initializeWebSocket(socket_url);
             router.replace("game")
         } else {
             alert("Please enter a valid Game ID.");

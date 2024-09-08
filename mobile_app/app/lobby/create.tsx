@@ -7,20 +7,20 @@ import CaptureTheFlagIcon from "@assets/icons/flag.png";
 
 import React, { useState } from "react";
 import { StyleSheet, Image, View, Text, TouchableOpacity } from "react-native";
-import { initiateWebSocket } from "@components/archive_api";
 import { tokenStore } from "@services/auth";
 import { useRouter } from 'expo-router'; // Import the router for navigation
+import { useWebSocketStore } from "@services/socket";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || '';
 
 const CreateGameComponent: React.FC = () => {
-    const [websocket, setWebsocket] = useState<WebSocket>();
+    const initializeWebSocket = useWebSocketStore((state) => state.initializeWebSocket)
     const token = tokenStore((state) => state.token); // Access the token from the Zustand store
     const router = useRouter();
 
     const handleCreateGame = ({ gameType }: { gameType: string }) => {
         const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/create_game/${gameType}?token=${token}`;
-        setWebsocket(initiateWebSocket(socket_url));
+        initializeWebSocket(socket_url);
         router.replace("game");
     };
 
