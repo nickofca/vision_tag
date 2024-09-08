@@ -1,5 +1,5 @@
 // store.js
-import create from 'zustand';
+import { create } from 'zustand';
 
 // Define the type for the store
 interface TokenStore {
