@@ -1,5 +1,5 @@
-// store.js
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define the type for the store
 interface TokenStore {
@@ -12,9 +12,19 @@ interface TokenStore {
 export const tokenStore = create<TokenStore>((set) => ({
     token: null, // initial token state
 
-    setToken: (token) => set({ token }), // action to set token
+    setToken: (token) => {
+        // Save token in AsyncStorage
+        AsyncStorage.setItem('sessionToken', token).catch((error) =>
+            console.error('Failed to save token:', error)
+        );
+        set({ token });
+    },
+
     logout: () => {
-        localStorage.removeItem('sessionToken'); // remove token from local storage
+        // Remove token from AsyncStorage
+        AsyncStorage.removeItem('sessionToken').catch((error) =>
+            console.error('Failed to remove token:', error)
+        );
         set({ token: null }); // reset token state
     },
 }));
@@ -38,7 +48,9 @@ export const signupUser = (username: string, email: string, password: string): P
         .then((data) => {
             if (data.payload && data.payload.token) {
                 const { token } = data.payload;
-                localStorage.setItem('sessionToken', token); // store token in local storage
+                AsyncStorage.setItem('sessionToken', token).catch((error) =>
+                    console.error('Failed to save token:', error)
+                ); // Store token in AsyncStorage
                 return token; // return token for immediate login
             }
             throw new Error('Signup failed');
@@ -65,8 +77,10 @@ export const loginUser = (username: string, password: string): Promise<string | 
         .then((data) => {
             if (data.payload && data.payload.token) {
                 const { token } = data.payload;
-                localStorage.setItem('sessionToken', token); // store token in local storage
-                tokenStore.getState().setToken(token); // set token in zustand store
+                AsyncStorage.setItem('sessionToken', token).catch((error) =>
+                    console.error('Failed to save token:', error)
+                ); // Store token in AsyncStorage
+                tokenStore.getState().setToken(token); // Set token in Zustand store
                 return token; // return token
             }
             throw new Error('Login failed');
@@ -94,7 +108,7 @@ export const logoutUser = (): Promise<any> => {
     })
         .then((response) => response.json())
         .then((data) => {
-            tokenStore.getState().logout(); // clear state and remove token
+            tokenStore.getState().logout(); // Clear state and remove token from AsyncStorage
             return data;
         })
         .catch((error) => {
@@ -103,8 +117,13 @@ export const logoutUser = (): Promise<any> => {
         });
 };
 
-// Optional: Restore token from local storage on app load
-const storedToken = localStorage.getItem('sessionToken');
-if (storedToken) {
-    tokenStore.getState().setToken(storedToken); // Restore token from local storage
-}
+// Optional: Restore token from AsyncStorage on app load
+AsyncStorage.getItem('sessionToken')
+    .then((storedToken) => {
+        if (storedToken) {
+            tokenStore.getState().setToken(storedToken); // Restore token from AsyncStorage
+        }
+    })
+    .catch((error) => {
+        console.error('Failed to retrieve token from storage:', error);
+    });
