@@ -5,7 +5,7 @@ const ImposterIcon = require("@assets/icons/suspect.png");
 const ScavengerIcon = require("@assets/icons/vulture.png");
 const CaptureTheFlagIcon = require("@assets/icons/flag.png");
 
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Image, View, Text, TouchableOpacity } from "react-native";
 import { tokenStore } from "@services/auth";
 import { useRouter } from 'expo-router'; // Import the router for navigation
