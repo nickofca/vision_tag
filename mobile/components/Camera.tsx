@@ -1,39 +1,49 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { CameraView } from 'expo-camera';
+import { useWebSocketStore} from "@services/socket";
+import { tokenStore } from "@services/auth";
 
 interface CameraViewComponentProps {
     websocket: WebSocket | null;
 }
 
 const CameraViewComponent: React.FC<CameraViewComponentProps> = ({ websocket }) => {
-    const [photoUri, setPhotoUri] = useState<string | null>(null);
     const cameraViewRef = useRef<CameraView>(null);
+    const { socket, connectionStatus } = useWebSocketStore();
+    const { token }  = tokenStore();
 
     const takePicture = async () => {
         if (cameraViewRef.current) {
             try {
                 const options = {
                     quality: 0.5,
-                    base64: true, // Include base64 data to send via WebSocket
-                    exif: true,
+                    base64: true,  // Include base64 data to send via WebSocket
+                    exif: false,   // Disable exif to reduce memory usage
                 };
 
                 const photo = await cameraViewRef.current.takePictureAsync(options);
 
-                if (photo && photo.uri) {  // Ensure photo is defined before accessing uri
-                    setPhotoUri(photo.uri);
-                    console.log(photo);
+                if (photo && photo.base64) {  // Ensure photo is defined and base64 exists
+                    console.log('Picture taken');
 
-                    if (websocket && websocket.readyState === WebSocket.OPEN) {
-                        websocket.send(JSON.stringify({
-                            type: 'image',
-                            data: photo.base64,
-                        }));
-                        console.log('Picture sent via WebSocket');
+                    // Send the image over WebSocket
+                    if (socket && connectionStatus == "connected") {
+                        // Construct the action data as a JSON object
+                        const actionData = {
+                            image: photo.base64,
+                        };
+
+                        // Construct the message to be sent
+                        const message = JSON.stringify({
+                            token: token,
+                            type: "SubmittedShot",
+                            payload: JSON.stringify(actionData), // Convert actionData to JSON string
+                        });
                     } else {
                         console.log('WebSocket is not open');
                     }
+
                 } else {
                     console.log('Failed to capture photo');
                 }
@@ -55,12 +65,6 @@ const CameraViewComponent: React.FC<CameraViewComponentProps> = ({ websocket }) 
                     <Text style={styles.text}>Take Picture</Text>
                 </TouchableOpacity>
             </View>
-            {photoUri && (
-                <Image
-                    source={{ uri: photoUri }}
-                    style={styles.preview}
-                />
-            )}
         </View>
     );
 };
