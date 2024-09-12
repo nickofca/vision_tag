@@ -1,24 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { Stack } from 'expo-router';  // Import the Stack from expo-router
 import LogOutButton from '@components/LogOutButton'; // Import the LogOutButton
-import AuthListener from "@hooks/AuthListener";
+
 
 const LobbyLayout = () => {
     return (
-        <View style={styles.container}>
-            <AuthListener />
-            {/* Header Section */}
+        <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>Lobby</Text>
-                <LogOutButton /> {/* Add the logout button here */}
+                <LogOutButton />
             </View>
 
-            {/* The Stack component manages navigation for the lobby routes */}
             <View style={styles.content}>
                 <Stack />
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -36,11 +32,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 16,
-    },
-    headerText: {
-        color: '#ffffff',
-        fontSize: 20,
-        fontWeight: 'bold',
     },
     content: {
         flex: 1,
