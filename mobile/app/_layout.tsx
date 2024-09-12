@@ -4,14 +4,15 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Stack } from 'expo-router';
-
+import WebSocketListener from "@hooks/SocketListener";
+import AuthListener from "@hooks/AuthListener";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
     const [loaded] = useFonts({
-        SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+        SpaceMono: require('@assets/fonts/SpaceMono-Regular.ttf'),
     });
 
     useEffect(() => {
@@ -26,17 +27,11 @@ export default function RootLayout() {
 
     return (
         <ThemeProvider value={DefaultTheme}>
+            <AuthListener />
+            <WebSocketListener />
             <Stack screenOptions={{
                 headerShown: false,  // This disables the header for all screens
-            }}>
-                <Stack.Screen name="index" />
-                <Stack.Screen name="auth/login" />
-                <Stack.Screen name="auth/signup" />
-                <Stack.Screen name="lobby/create" />
-                <Stack.Screen name="lobby/join" />
-                <Stack.Screen name="game" />
-                <Stack.Screen name="+not-found" />
-            </Stack>
+            }} initialRouteName={"/auth/login"} />
         </ThemeProvider>
     );
 }
