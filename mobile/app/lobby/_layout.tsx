@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { Stack } from 'expo-router';  // Import the Stack from expo-router
 import LogOutButton from '@components/LogOutButton'; // Import the LogOutButton
 
