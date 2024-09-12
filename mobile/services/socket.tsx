@@ -3,7 +3,7 @@ import { create } from 'zustand';
 interface WebSocketStore {
     socket: WebSocket | null;
     connected: boolean;
-    initializeWebSocket: (url: string) => void;
+    initializeWebSocket: (url: string, router: any) => void; // Pass router as an argument
     sendMessage: (message: string) => void;
     closeWebSocket: () => void;
     connectionStatus: string;
@@ -14,7 +14,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
     socket: null, // Initially, the WebSocket is not connected
     connected: false, // Connection status
     connectionStatus: 'disconnected', // Descriptive status for the WebSocket
-    initializeWebSocket: (url: string) => {
+    initializeWebSocket: (url: string, router: any) => {
         // Initialize a new WebSocket connection
         const socket = new WebSocket(url);
 
@@ -24,7 +24,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
             console.log('WebSocket connection opened.');
         };
 
-        socket.onmessage = (event) => {
+        socket.onmessage = (event: MessageEvent) => {
             console.log('Message received:', event.data);
             // Handle the message or update the store if necessary
         };
@@ -32,9 +32,10 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
         socket.onclose = () => {
             set({ connected: false, connectionStatus: 'disconnected', socket: null });
             console.log('WebSocket connection closed.');
+            router.replace('lobby/menu'); // Use the router passed in the argument
         };
 
-        socket.onerror = (error) => {
+        socket.onerror = (error: Event) => {
             console.error('WebSocket error:', error);
             set({ connectionStatus: 'error' });
         };
@@ -51,14 +52,8 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
     closeWebSocket: () => {
         const { socket } = get();
         if (socket) {
-            console.log("socket: close start")
-
-            socket.close(); // rThis will trigger the onclose event
-            console.log("socket: close")
-
+            socket.close(); // This will trigger the onclose event
             set({ socket: null, connected: false, connectionStatus: 'closed' });
-            console.log("zustin object altered")
-
             console.log('WebSocket connection closing.');
         }
     },

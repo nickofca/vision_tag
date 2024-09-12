@@ -17,7 +17,7 @@ const JoinGameComponent: React.FC = () => {
     const handleJoinGame = () => {
         if (gameId.trim()) {
             const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`
-            initializeWebSocket(socket_url);
+            initializeWebSocket(socket_url, router);
             router.replace("game")
         } else {
             alert("Please enter a valid Game ID.");

@@ -20,7 +20,7 @@ const CreateGameComponent: React.FC = () => {
 
     const handleCreateGame = ({ gameType }: { gameType: string }) => {
         const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/create_game/${gameType}?token=${token}`;
-        initializeWebSocket(socket_url);
+        initializeWebSocket(socket_url, router);
         router.replace("game");
     };
 
