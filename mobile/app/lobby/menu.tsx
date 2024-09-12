@@ -1,21 +1,31 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const LobbyMenuComponent: React.FunctionComponent = () => {
-    const router = useRouter(); // use the router from expo-router for navigation
+const LobbyMenuComponent: React.FC = () => {
+    const router = useRouter();
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Lobby</Text>
-            <Button
-                title="Create Game"
-                onPress={() => router.push('/lobby/create')} // Navigate to /game/create
-            />
-            <Button
-                title="Join Game"
-                onPress={() => router.push('/lobby/join')} // Navigate to /game/join
-            />
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.customButton}
+                    onPress={() => router.push('/lobby/create')}
+                >
+                    <Text style={styles.buttonText}>Create Game</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.customButton}
+                    onPress={() => router.push('/lobby/join')}
+                >
+                    <Text style={styles.buttonText}>Join Game</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -33,5 +43,20 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 24,
+    },
+    buttonContainer: {
+        margin: 10,
+    },
+    customButton: {
+        backgroundColor: '#000',  // Button background color
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,  // Rounded corners
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',  // Text color
+        fontWeight: 'bold',
     },
 });
