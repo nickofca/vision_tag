@@ -1,9 +1,9 @@
-import FirstShotIcon from "@assets/icons/FirstShotIcon.png";
-import DeathmatchIcon from "@assets/icons/skull.png";
-import AssassinIcon from "@assets/icons/assassin.png";
-import ImposterIcon from "@assets/icons/suspect.png";
-import ScavengerIcon from "@assets/icons/vulture.png";
-import CaptureTheFlagIcon from "@assets/icons/flag.png";
+const FirstShotIcon = require("@assets/icons/FirstShotIcon.png");
+const DeathmatchIcon = require("@assets/icons/skull.png");
+const AssassinIcon = require("@assets/icons/assassin.png");
+const ImposterIcon = require("@assets/icons/suspect.png");
+const ScavengerIcon = require("@assets/icons/vulture.png");
+const CaptureTheFlagIcon = require("@assets/icons/flag.png");
 
 import React, { useState } from "react";
 import { StyleSheet, Image, View, Text, TouchableOpacity } from "react-native";
