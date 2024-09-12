@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
-import { initiateWebSocket } from "@components/archive_api";
 import { tokenStore } from "@services/auth"
 import { useRouter } from 'expo-router';
 import {useWebSocketStore} from "@services/socket"; // Import the router for navigation
