@@ -4,14 +4,13 @@ import CameraViewComponent from "@components/Camera";
 import { View, StyleSheet } from "react-native";
 import ScoreBoard, { Scores } from "@components/Scoring";
 import EjectButton from "@components/EjectButton";
-import WebSocketListener from "@hooks/SocketListener";
 
 type GameScreenProps = {
     websocket: WebSocket | null;
     setStartGame: (start: boolean) => void;
 };
 
-const GameScreen: React.FC<GameScreenProps> = ({ websocket, setStartGame }) => {
+const GameScreen: React.FC<GameScreenProps> = ({ websocket }) => {
     const [scores, setScores] = useState<Scores>({}); // State to hold the score data
 
     // Listen for server side game-events
@@ -29,7 +28,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ websocket, setStartGame }) => {
 
     return (
         <View style={styles.container}>
-            <WebSocketListener />
 
             <View style={styles.crosshair} />
 

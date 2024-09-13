@@ -4,7 +4,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Stack } from 'expo-router';
-import WebSocketListener from "@hooks/SocketListener";
 import AuthListener from "@hooks/AuthListener";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -28,7 +27,6 @@ export default function RootLayout() {
     return (
         <ThemeProvider value={DefaultTheme}>
             <AuthListener />
-            <WebSocketListener />
             <Stack screenOptions={{
                 headerShown: false,  // This disables the header for all screens
             }} initialRouteName={"/auth/login"} />
