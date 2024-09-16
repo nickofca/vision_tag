@@ -11,8 +11,8 @@ const LobbyMenuComponent: React.FC = () => {
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
-                    style={styles.customButton}
-                    onPress={() => router.push('/lobby/create')}
+                    style={globalStyles.customButton}
+                    onPress={() => router.navigate('/lobby/create')}
                 >
                     <Text style={styles.buttonText}>Create Game</Text>
                 </TouchableOpacity>

@@ -21,7 +21,7 @@ const AuthListener = () => {
             router.replace('/lobby/menu');
         } else if (!token && currentRoute !== '/auth/login') {
             // If the token is null or not set, and the user is not on the login page, redirect to login
-            router.replace('/auth/login');
+            router.navigate('/auth/login');
         }
     }, [token, router]); // Trigger this effect whenever `token` or `router` changes
 
