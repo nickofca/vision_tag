@@ -5,7 +5,6 @@ interface WebSocketStore {
     connected: boolean;
     initializeWebSocket: (url: string, router: any) => void; // Pass router as an argument
     sendMessage: (message: string) => void;
-    closeWebSocket: () => void;
     connectionStatus: string;
 }
 
@@ -32,7 +31,6 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
         socket.onclose = () => {
             set({ connected: false, connectionStatus: 'disconnected', socket: null });
             console.log('WebSocket connection closed.');
-            router.replace('lobby/menu'); // Use the router passed in the argument
         };
 
         socket.onerror = (error: Event) => {
@@ -47,14 +45,6 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
             console.log('Message sent:', message);
         } else {
             console.log('WebSocket is not connected.');
-        }
-    },
-    closeWebSocket: () => {
-        const { socket } = get();
-        if (socket) {
-            socket.close(); // This will trigger the onclose event
-            set({ socket: null, connected: false, connectionStatus: 'closed' });
-            console.log('WebSocket connection closing.');
         }
     },
 }));
