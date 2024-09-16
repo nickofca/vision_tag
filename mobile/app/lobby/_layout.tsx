@@ -1,40 +1,27 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
-import { Stack } from 'expo-router';  // Import the Stack from expo-router
+import { Stack, useSegments } from 'expo-router';  // Import useSegments to detect the active route
 import LogOutButton from '@components/LogOutButton'; // Import the LogOutButton
-
+import Logo from "@components/Logo"
+import BackButton from '@components/BackButton'; // Import the BackButton
 
 const LobbyLayout = () => {
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <LogOutButton />
-            </View>
+    const segments = useSegments();  // Detect the current screen segment
 
-            <View style={styles.content}>
-                <Stack />
-            </View>
-        </SafeAreaView>
+    // Only show BackButton on the "create" or "join" screen
+    const showBackButton = segments.includes("create") || segments.includes("join");
+
+    return (
+        <>
+            <Logo />
+            {showBackButton && <BackButton />}
+            <Stack>
+                <Stack.Screen name="create" options={{ headerShown: false }} />
+                <Stack.Screen name="join" options={{ headerShown: false }} />
+                <Stack.Screen name="menu" options={{ headerShown: false }} />
+            </Stack>
+            <LogOutButton />
+        </>
     );
 };
 
 export default LobbyLayout;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f8f8f8',
-    },
-    header: {
-        height: 60,
-        backgroundColor: '#6200ee',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-    },
-    content: {
-        flex: 1,
-        padding: 16,
-    },
-});

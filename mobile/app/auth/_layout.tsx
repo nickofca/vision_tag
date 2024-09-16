@@ -1,15 +1,15 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import {DefaultTheme, ThemeProvider} from "@react-navigation/native"; // Import the AuthListener
+import Logo from "@components/Logo"
 
 const AuthLayout: React.FC = () => {
     return (
         <>
-            <ThemeProvider value={DefaultTheme}>
-                <Stack>
-                    <Stack.Screen name="login" options={{ headerShown: false }} />
-                </Stack>
-            </ThemeProvider>
+            <Logo />
+            <Stack>
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen name="signup" options={{ headerShown: false }} />
+            </Stack>
         </>
     );
 };
