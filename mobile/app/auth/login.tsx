@@ -1,75 +1,56 @@
 import { loginUser } from "@services/auth";
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the forward arrow icon
+import globalStyles from "@styles/globalStyles";
 
 export default function LoginComponent() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Log In</Text>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+            <View style={globalStyles.container}>
+                <Text style={globalStyles.title}>Log In</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Enter your username"
-                value={username}
-                onChangeText={setUsername}  // Use onChangeText for TextInput
-                autoCapitalize="none"
-            />
+                <TextInput
+                    style={globalStyles.input}
+                    placeholder="Enter your username"
+                    value={username}
+                    onChangeText={setUsername}
+                    autoCapitalize="none"
+                />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                value={password}
-                onChangeText={setPassword}  // Use onChangeText for TextInput
-                secureTextEntry={true}  // For password input
-                autoCapitalize="none"
-            />
+                <TextInput
+                    style={globalStyles.input}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                />
 
-            <TouchableOpacity
-                onPress={async () => {
-                    await loginUser(username, password);
-                }}
-                style={styles.button}
-            >
-                <Text style={styles.buttonText}>Log In</Text>
-            </TouchableOpacity>
-        </View>
+                {/* TouchableOpacity with minimal styles for the black forward arrow */}
+                <TouchableOpacity
+                    onPress={async () => {
+                        await loginUser(username, password);
+                    }}
+                    style={{ padding: 10 }} // Simple padding for touchable area
+                >
+                    {/* Black forward arrow */}
+                    <Ionicons name="arrow-forward" size={24} color="black" />
+                </TouchableOpacity>
+
+                {/* Sign Up Link */}
+                <View style={globalStyles.textContainer}>
+                    <Text>Don't have an account? </Text>
+                    <TouchableOpacity onPress={() => router.navigate('/auth/signup')}>
+                        <Text style={globalStyles.touchableText}>Sign up</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </KeyboardAvoidingView>
     );
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    input: {
-        width: '80%',
-        padding: 10,
-        marginVertical: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-    },
-    button: {
-        backgroundColor: '#000',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-});
+};

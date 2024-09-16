@@ -1,29 +1,30 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import globalStyles from "@styles/globalStyles";
 
 const LobbyMenuComponent: React.FC = () => {
     const router = useRouter();
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Lobby</Text>
+        <View style={globalStyles.container}>
+            <Text style={globalStyles.title}>Lobby</Text>
 
-            <View style={styles.buttonContainer}>
+            <View style={globalStyles.buttonContainer}>
                 <TouchableOpacity
                     style={globalStyles.customButton}
                     onPress={() => router.navigate('/lobby/create')}
                 >
-                    <Text style={styles.buttonText}>Create Game</Text>
+                    <Text style={globalStyles.buttonText}>Create Game</Text>
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.buttonContainer}>
+            <View style={globalStyles.buttonContainer}>
                 <TouchableOpacity
-                    style={styles.customButton}
-                    onPress={() => router.push('/lobby/join')}
+                    style={globalStyles.customButton}
+                    onPress={() => router.navigate('/lobby/join')}
                 >
-                    <Text style={styles.buttonText}>Join Game</Text>
+                    <Text style={globalStyles.buttonText}>Join Game</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -31,32 +32,3 @@ const LobbyMenuComponent: React.FC = () => {
 };
 
 export default LobbyMenuComponent;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 24,
-    },
-    buttonContainer: {
-        margin: 10,
-    },
-    customButton: {
-        backgroundColor: '#000',  // Button background color
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,  // Rounded corners
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',  // Text color
-        fontWeight: 'bold',
-    },
-});

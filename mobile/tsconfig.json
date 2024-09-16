@@ -23,6 +23,9 @@
       ],
       "@screens/*": [
         "screens/*"
+      ],
+      "@styles/*": [
+        "styles/*"
       ]
     }
   },

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, Alert, StyleSheet, ActivityIndicator, View } from 'react-native';
+import { TouchableOpacity, Text, Alert, ActivityIndicator, View, StyleSheet } from 'react-native';
 import { logoutUser } from '@services/auth'; // Import your logout function
+import globalStyles from '@styles/globalStyles';
 
 const LogOutButton = () => {
     const [loading, setLoading] = useState(false);
@@ -19,39 +20,48 @@ const LogOutButton = () => {
     };
 
     return (
-        <TouchableOpacity
-            style={styles.button}
-            onPress={handleLogout}
-            disabled={loading}
-        >
-            <View style={styles.innerContainer}>
-                {loading ? (
-                    <ActivityIndicator color="#fff" />
+        <View style={styles.container}>
+            <TouchableOpacity
+                style={styles.logOutButton}
+                onPress={handleLogout}
+                disabled={loading}
+            >
+                <View style={globalStyles.innerContainer}>
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
                     ) : (
-                    <Text style={styles.buttonText}>Log Out</Text>
-            )}
+                        <Text style={styles.buttonText}>Log Out</Text>
+                    )}
+                </View>
+            </TouchableOpacity>
         </View>
-</TouchableOpacity>
-);
+    );
 };
 
-export default LogOutButton;
-
 const styles = StyleSheet.create({
-    button: {
-        backgroundColor: '#6200ee',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
+    container: {
+        position: 'absolute',
+        top: 20, // Higher positioning to avoid overlapping with the status bar
+        right: 10, // Distance from the right edge of the screen
+    },
+    logOutButton: {
+        backgroundColor: '#FF5C5C', // Red color to make the button more noticeable
+        width: 80, // Slightly smaller width
+        height: 30, // Adjusted height
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    innerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        borderRadius: 20, // Rounded corners for a modern look
+        shadowColor: '#000', // Add a subtle shadow for depth
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 2,
+        elevation: 3, // Shadow for Android devices
     },
     buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
+        color: '#fff', // White text for contrast
+        fontSize: 14, // Adjust font size
+        fontWeight: '600', // Slightly bolder text
     },
 });
+
+export default LogOutButton;

@@ -1,17 +1,21 @@
-const FirstShotIcon = require("@assets/icons/FirstShotIcon.png");
-const DeathmatchIcon = require("@assets/icons/skull.png");
-const AssassinIcon = require("@assets/icons/assassin.png");
-const ImposterIcon = require("@assets/icons/suspect.png");
-const ScavengerIcon = require("@assets/icons/vulture.png");
-const CaptureTheFlagIcon = require("@assets/icons/flag.png");
-
 import React from "react";
-import { StyleSheet, Image, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Image } from 'expo-image';
 import { tokenStore } from "@services/auth";
 import { useRouter } from 'expo-router'; // Import the router for navigation
 import { useWebSocketStore } from "@services/socket";
+import globalStyles from "@styles/globalStyles";
+import BackButton from "@components/BackButton";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || '';
+
+// Import your PNG icons similarly to the flagIcon
+import flagIcon from "@assets/icons/flag.png";
+import firstShotIcon from "@assets/icons/FirstShotIcon.png";
+import skullIcon from "@assets/icons/skull.png";
+import assassinIcon from "@assets/icons/assassin.png";
+import suspectIcon from "@assets/icons/suspect.png";
+import vultureIcon from "@assets/icons/vulture.png";
 
 const CreateGameComponent: React.FC = () => {
     const initializeWebSocket = useWebSocketStore((state) => state.initializeWebSocket)
@@ -25,52 +29,43 @@ const CreateGameComponent: React.FC = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Create Game</Text>
-            <View style={styles.gridContainer}>
-                <TouchableOpacity onPress={() => handleCreateGame({ gameType: "FirstShot" })} style={styles.gameButton}>
-                    <Image source={FirstShotIcon} style={styles.icon} />
-                    <Text>First Shot</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.disabledGameButton}>
-                    <Image source={DeathmatchIcon} style={styles.icon} />
-                    <Text>Deathmatch</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.disabledGameButton}>
-                    <Image source={AssassinIcon} style={styles.icon} />
-                    <Text>Assassin</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.disabledGameButton}>
-                    <Image source={ImposterIcon} style={styles.icon} />
-                    <Text>Imposter</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.disabledGameButton}>
-                    <Image source={ScavengerIcon} style={styles.icon} />
-                    <Text>Scavenger</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.disabledGameButton}>
-                    <Image source={CaptureTheFlagIcon} style={styles.icon} />
-                    <Text>Capture the Flag</Text>
-                </TouchableOpacity>
+        <>
+            <View style={globalStyles.container}>
+                <Text style={globalStyles.title}>Create Game</Text>
+                <View style={styles.gridContainer}>
+                    <TouchableOpacity onPress={() => handleCreateGame({ gameType: "FirstShot" })} style={styles.gameButton}>
+                        <Image source={firstShotIcon} style={styles.icon} />
+                        <Text>First Shot</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.disabledGameButton}>
+                        <Image source={skullIcon} style={styles.icon} />
+                        <Text>Deathmatch</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.disabledGameButton}>
+                        <Image source={assassinIcon} style={styles.icon} />
+                        <Text>Assassin</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.disabledGameButton}>
+                        <Image source={suspectIcon} style={styles.icon} />
+                        <Text>Imposter</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.disabledGameButton}>
+                        <Image source={vultureIcon} style={styles.icon} />
+                        <Text>Scavenger</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.disabledGameButton}>
+                        <Image source={flagIcon} style={styles.icon} />
+                        <Text>Capture the Flag</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </>
     );
 };
 
 export default CreateGameComponent;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
     gridContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -83,7 +78,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 10,
         padding: 10,
-        backgroundColor: '#000',
+        backgroundColor: '#00000000',
         borderRadius: 5,
     },
     disabledGameButton: {
@@ -91,12 +86,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 10,
         padding: 10,
-        backgroundColor: '#555',
+        backgroundColor: '#777',
         borderRadius: 5,
     },
     icon: {
-        width: 100,
-        height: 100,
+        width: 80,
+        height: 80,
         marginBottom: 10,
     },
 });

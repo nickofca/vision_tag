@@ -1,37 +1,22 @@
 // Game.tsx (or wherever the Game component is located)
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CameraViewComponent from "@components/Camera";
 import { View, StyleSheet } from "react-native";
-import ScoreBoard, { Scores } from "@components/Scoring";
+import ScoreBoard from "@components/Scoring";
 import EjectButton from "@components/EjectButton";
+import globalStyles from "@styles/globalStyles";
+import {useWebSocketStore} from "@services/socket";
 
-type GameScreenProps = {
-    websocket: WebSocket | null;
-    setStartGame: (start: boolean) => void;
-};
 
-const GameScreen: React.FC<GameScreenProps> = ({ websocket }) => {
-    const [scores, setScores] = useState<Scores>({}); // State to hold the score data
-
-    // Listen for server side game-events
-    useEffect(() => {
-        if (websocket) {
-            websocket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                if (data.type === 'ScoreUpdate' && data.payload) {
-                    setScores(data.payload);
-                }
-            };
-        }
-    }, [websocket]);
+const GameScreen: React.FC = () => {
+    const websocket = useWebSocketStore((state) => state.socket);
 
     return (
-        <View style={styles.container}>
+        <View style={globalStyles.container}>
 
             <View style={styles.crosshair} />
 
-            <ScoreBoard scores={scores} />
+            <ScoreBoard websocket={websocket} />
 
             <EjectButton />
 
@@ -43,12 +28,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ websocket }) => {
 export default GameScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#000", // Set background to black (temporary)
-    },
     crosshair: {
         position: "absolute",
         width: 50,
