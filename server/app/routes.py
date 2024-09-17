@@ -26,7 +26,7 @@ async def websocket_create_game(websocket: WebSocket, game_mode: str):
 
     try:
         # Parse the connection received message
-        logging.info(f"{player_id} - {await websocket.receive()}")
+        logging.info(f"{player_id} - Connected to game")
         # Initiate game
         if game_mode == "BasicShooter":
             game = BasicShooter()
@@ -45,6 +45,10 @@ async def websocket_create_game(websocket: WebSocket, game_mode: str):
         while True:
             # Listen for events
             message = await websocket.receive()
+            # Check for client-side disconnect
+            if ("type" in message.keys()) and (message["type"] == "websocket.disconnect"):
+                logging.info(f"{player_id} - Disconnected from game")
+                return
             # Process standard response
             response_dict = json.loads(message["text"])
             payload = json.loads(response_dict["payload"])
