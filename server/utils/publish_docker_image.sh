@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Build the image for the specified platform using docker
-docker build --platform linux/amd64 -t cpu-deploy:latest .
+docker build --platform linux/amd64 -t cpu-deploy:latest ..
 
 # Tag the image for ECR
 docker tag cpu-deploy:latest 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
