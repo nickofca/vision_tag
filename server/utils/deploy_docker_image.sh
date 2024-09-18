@@ -28,7 +28,7 @@ Type=oneshot
 ExecStartPre=/usr/bin/sudo /usr/bin/podman container prune -f
 ExecStartPre=/usr/bin/sudo /bin/sh -c '/usr/local/bin/aws ecr get-login-password --region us-east-1 | /usr/bin/podman login --username AWS --password-stdin 732284202021.dkr.ecr.us-east-1.amazonaws.com'
 ExecStartPre=/usr/bin/sudo /usr/bin/podman pull 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
-ExecStart=/usr/bin/sudo /usr/bin/podman run -d -p 8000:8000 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
+ExecStart=/usr/bin/sudo /usr/bin/podman run -d -p 443:443 732284202021.dkr.ecr.us-east-1.amazonaws.com/server/cpu-deploy:latest
 RemainAfterExit=yes
 
 [Install]
