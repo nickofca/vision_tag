@@ -52,8 +52,4 @@ COPY .. .
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/workspace/app
 
-# Load certificates from aws environment
-RUN python /workspace/utils/get_origin_certificates.py
-
-# Command to run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile=/etc/ssl/private/origin_ca_key.pem", "--ssl-certfile=/etc/ssl/certs/origin_ca_cert.pem"]
+CMD ["sh", "-c", "python3 /workspace/utils/get_origin_certificates.py && uvicorn app.main:app --host 0.0.0.0 --port 443 --ssl-keyfile=/etc/ssl/private/origin_ca_key.pem --ssl-certfile=/etc/ssl/certs/origin_ca_cert.pem"]

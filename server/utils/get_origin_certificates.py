@@ -1,13 +1,17 @@
 import boto3
 import os
+import json
+import base64
 
 def get_secret(secret_name):
-    client = boto3.client("secretsmanager")
+    client = boto3.client("secretsmanager", region_name="us-east-1")
     response = client.get_secret_value(SecretId=secret_name)
     return response["SecretString"]
 
-ssl_cert = get_secret("origin-ca-cert")
-ssl_key = get_secret("origin-ca-key")
+origin_cert_dict = json.loads(get_secret("OriginCertSecrets"))
+# Decode from base64 (used to prevent newline drops in secret storage)
+ssl_cert = base64.b64decode(origin_cert_dict["origin-ca-cert"]).decode("utf-8")
+ssl_key = base64.b64decode(origin_cert_dict["origin-ca-key"]).decode("utf-8")
 
 # Store them temporarily in a secure file if needed
 with open("/etc/ssl/certs/origin_ca_cert.pem", "w") as cert_file:
