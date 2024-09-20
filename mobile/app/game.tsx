@@ -6,6 +6,7 @@ import ScoreBoard from "@components/Scoring";
 import EjectButton from "@components/EjectButton";
 import globalStyles from "@styles/globalStyles";
 import {useWebSocketStore} from "@services/socket";
+import GameIdDisplay from "@components/GameIdDisplay";
 
 
 const GameScreen: React.FC = () => {
@@ -13,6 +14,8 @@ const GameScreen: React.FC = () => {
 
     return (
         <View style={globalStyles.container}>
+
+            <GameIdDisplay />
 
             <View style={styles.crosshair} />
 
@@ -37,7 +40,6 @@ const styles = StyleSheet.create({
         borderRadius: 25, // Circular crosshair
         top: "50%",
         left: "50%",
-        marginLeft: -25, // Center the crosshair horizontally
-        marginTop: -25, // Center the crosshair vertically
+        zIndex: 2, // Higher zIndex to be above the camera
     },
 });

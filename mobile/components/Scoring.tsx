@@ -74,13 +74,14 @@ const ScoreBoard: React.FC<ScoreBoardProps> = ({ websocket }) => {
 const styles = StyleSheet.create({
     scoreboard: {
         position: 'absolute', // Place it in absolute positioning
-        top: 20, // Position it closer to the top
+        top: 35, // Position it closer to the top
         left: 10, // Position it closer to the left
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         padding: 15, // Adjust padding to make it more compact
         borderRadius: 10,
         width: 150, // Adjust the width to fit content well
         alignItems: 'flex-start', // Align text to the left
+        zIndex: 2, // Higher zIndex to be above the camera
     },
     scoreboardTitle: {
         color: '#fff',
