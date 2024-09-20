@@ -5,7 +5,6 @@ import { tokenStore } from "@services/auth";
 import { useRouter } from 'expo-router'; // Import the router for navigation
 import { useWebSocketStore } from "@services/socket";
 import globalStyles from "@styles/globalStyles";
-import BackButton from "@components/BackButton";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || '';
 
@@ -24,7 +23,7 @@ const CreateGameComponent: React.FC = () => {
 
     const handleCreateGame = ({ gameType }: { gameType: string }) => {
         const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/create_game/${gameType}?token=${token}`;
-        initializeWebSocket(socket_url, router);
+        initializeWebSocket(socket_url);
         router.replace("game");
     };
 

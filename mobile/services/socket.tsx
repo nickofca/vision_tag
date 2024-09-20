@@ -3,7 +3,7 @@ import { create } from 'zustand';
 interface WebSocketStore {
     socket: WebSocket | null;
     connected: boolean;
-    initializeWebSocket: (url: string, router: any) => void; // Pass router as an argument
+    initializeWebSocket: (url: string) => void; // Pass router as an argument
     sendMessage: (message: string) => void;
     connectionStatus: string;
 }
@@ -13,7 +13,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => ({
     socket: null, // Initially, the WebSocket is not connected
     connected: false, // Connection status
     connectionStatus: 'disconnected', // Descriptive status for the WebSocket
-    initializeWebSocket: (url: string, router: any) => {
+    initializeWebSocket: (url: string) => {
         // Initialize a new WebSocket connection
         const socket = new WebSocket(url);
 

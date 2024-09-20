@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native"; // Import TouchableOpacity for buttons
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native"; // Import TouchableOpacity for buttons
 import { tokenStore } from "@services/auth";
 import { useRouter } from 'expo-router'; // For navigation
 import { useWebSocketStore } from "@services/socket"; // WebSocket management
 import globalStyles from "@styles/globalStyles";
-import BackButton from "@components/BackButton";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || '';
 
@@ -16,8 +15,14 @@ const JoinGameComponent: React.FC = () => {
 
     const handleJoinGame = () => {
         if (gameId.trim()) { // Validate Game ID
+            // Set up game connection
             const socket_url = `${API_BASE_URL.replace('http', 'ws')}/ws/join_game/${gameId}?token=${token}`;
-            initializeWebSocket(socket_url, router); // Initialize WebSocket connection
+            initializeWebSocket(socket_url); // Initialize WebSocket connection
+            // Receive game id
+
+            // Send game set up message
+
+            // Route to play screen
             router.navigate("game"); // Navigate to the game screen
         } else {
             Alert.alert("Invalid Input", "Please enter a valid Game ID."); // Native alert for input validation
