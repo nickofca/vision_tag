@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20, // Higher positioning to avoid overlapping with the status bar
         right: 10, // Distance from the right edge of the screen
+        zIndex: 2, // Higher zIndex to be above the camera
     },
     logOutButton: {
         backgroundColor: '#FF5C5C', // Red color to make the button more noticeable

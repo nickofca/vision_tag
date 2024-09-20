@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';  // Use useCameraPermissions hook
+import { CameraView, useCameraPermissions } from 'expo-camera';  // Correct usage of CameraView
 import { useWebSocketStore } from "@services/socket";
 import { tokenStore } from "@services/auth";
 import globalStyles from "@styles/globalStyles";
@@ -10,37 +10,33 @@ interface CameraViewComponentProps {
 }
 
 const CameraViewComponent: React.FC<CameraViewComponentProps> = () => {
-    const [cameraRef, setCameraRef] = useState<CameraView | null>(null);  // State to hold CameraView reference
+    const cameraRef = useRef<CameraView | null>(null);  // Use useRef for camera reference
     const { socket, connectionStatus } = useWebSocketStore();
-    const { token }  = tokenStore();
-    const [permission, requestPermission] = useCameraPermissions();  // Use the permission hook
+    const { token } = tokenStore();
+    const [permission, requestPermission] = useCameraPermissions();
 
     // Request camera permissions if they are not granted
     useEffect(() => {
         if (!permission || !permission.granted) {
-            requestPermission();  // Request permissions if not already granted
+            requestPermission();
         }
     }, [permission]);
 
     const takePicture = async () => {
-        if (cameraRef) {
+        if (cameraRef.current) {
             const options = {
                 quality: 0.5,
                 base64: true,  // Include base64 data to send via WebSocket
                 exif: false,   // Disable exif to reduce memory usage
+                width: 1920,   // Set the desired width
+                height: 1080,  // Set the desired height
             };
-            const photo = await cameraRef.takePictureAsync(options);
-            try {
-                const options = {
-                    quality: 0.5,
-                    base64: true,  // Include base64 data to send via WebSocket
-                    exif: false,   // Disable exif to reduce memory usage
-                };
 
-                const photo = await cameraRef.takePictureAsync(options);
+            try {
+                const photo = await cameraRef.current.takePictureAsync(options);
 
                 if (photo && photo.base64) {
-                    console.log('Picture taken');
+                    console.log('Picture taken successfully');
 
                     // Send the image over WebSocket
                     if (socket && connectionStatus === "connected") {
@@ -54,11 +50,10 @@ const CameraViewComponent: React.FC<CameraViewComponentProps> = () => {
                             payload: JSON.stringify(actionData),
                         });
 
-                        socket.send(message);  // Ensure this line actually sends the WebSocket message
+                        socket.send(message);
                     } else {
-                        console.log('WebSocket is not open');
+                        console.log('WebSocket is not connected');
                     }
-
                 } else {
                     console.log('Failed to capture photo');
                 }
@@ -68,23 +63,24 @@ const CameraViewComponent: React.FC<CameraViewComponentProps> = () => {
         }
     };
 
-    // Handle permission-related logic
     if (!permission || !permission.granted) {
-        return <View><Text>Requesting camera permissions...</Text></View>;
+        return (
+            <View>
+                <Text>Requesting camera permissions...</Text>
+            </View>
+        );
     }
 
     return (
         <View style={globalStyles.container}>
             <CameraView
                 style={globalStyles.cameraView}
-                ref={setCameraRef}  // Use callback ref instead of useRef
+                ref={cameraRef}  // Corrected usage of ref
                 onCameraReady={() => console.log('Camera is ready')}
             />
-            <View style={globalStyles.buttonContainer}>
-                <TouchableOpacity onPress={takePicture} style={globalStyles.button}>
-                    <Text style={globalStyles.buttonText}>Take Picture</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={takePicture} style={globalStyles.button}>
+                <Text style={globalStyles.buttonText}>Take Picture</Text>
+            </TouchableOpacity>
         </View>
     );
 };

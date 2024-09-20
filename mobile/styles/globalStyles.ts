@@ -52,6 +52,14 @@ export const globalStyles = StyleSheet.create({
     },
     cameraView: {
         flex: 1,
+        width: width,
+        height: height,
+        top: 0,
+        left: 0,
+        zIndex: -1,  // Ensure it appears behind other UI components
+        // Debug styling
+        borderColor: 'red',  // Add border to debug
+        borderWidth: 2,
     },
     touchableText: {
         color: '#1E90FF',
