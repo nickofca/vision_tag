@@ -1,4 +1,5 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -27,9 +28,20 @@ export default function RootLayout() {
     return (
         <ThemeProvider value={DefaultTheme}>
             <AuthListener />
-            <Stack screenOptions={{
-                headerShown: false,  // This disables the header for all screens
-            }} initialRouteName={"/auth/login"} />
+            <SafeAreaView style={styles.container}>
+                <Stack
+                    screenOptions={{
+                        headerShown: false,  // This disables the header for all screens
+                    }}
+                    initialRouteName="/auth/login"
+                />
+            </SafeAreaView>
         </ThemeProvider>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});
