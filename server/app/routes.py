@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Depends
 from auth import register_user, authenticate_user, token_required, logout, generate_token, decode_token
-from schemas import UserCreate, UserLogin, UserResponse
+from schemas import UserCreate, UserLogin, UserResponse, UserMessage
 from game_logic import BasicShooter, FirstShot
 import json
 import logging
@@ -27,6 +27,10 @@ async def websocket_create_game(websocket: WebSocket, game_mode: str):
     try:
         # Parse the connection received message
         logging.info(f"{player_id} - Connected to game")
+
+        # Opening message
+        opening_message = await websocket.receive()
+
         # Initiate game
         if game_mode == "BasicShooter":
             game = BasicShooter()
@@ -36,6 +40,10 @@ async def websocket_create_game(websocket: WebSocket, game_mode: str):
             await game.add_respawn_class(player_id, respawn_object_class)
         else:
             raise HTTPException(status_code=400, detail="Invalid game type received")
+
+        # Send gameid
+        await websocket.send_json(dict(UserMessage(type="GameIdReporting",
+                                                   payload={"gameid": game.game_id})))
 
         # Add player to game with websocket to publish events
         await game.add_player(player_id, websocket)
