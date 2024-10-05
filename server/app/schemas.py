@@ -7,14 +7,12 @@ class UserLogin(BaseModel):
 class UserCreate(UserLogin):
     email: EmailStr
 
-class UserResponse(BaseModel):
+class UserMessage(BaseModel):
     type: str
-    status: int
     payload: dict
 
-    class Config:
-        orm_mode = True
-        extra = "allow"
+class UserResponse(UserMessage):
+    status: int
 
 class Player(BaseModel):
     player_id: str

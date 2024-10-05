@@ -20,8 +20,8 @@ class BaseGame:
     async def add_player(self, player_id: str, websocket: WebSocket):
         self.players[player_id] = Player(player_id=player_id)
         self.sockets[player_id] = websocket
-        await self.publish_event(UserResponse(type="GameManagement", status=200, payload={"message": f"{player_id} joined the game."}))
-        await self.publish_event(UserResponse(type="ScoreUpdate", status=200, payload=self.user_score_dict))
+        await self.publish_event(UserMessage(type="GameManagement", payload={"message": f"{player_id} joined the game."}))
+        await self.publish_event(UserMessage(type="ScoreUpdate", payload=self.user_score_dict))
 
     async def remove_player(self, player_id: str):
         if player_id in self.players:
@@ -29,8 +29,8 @@ class BaseGame:
             if player_id in self.sockets.keys():
                 await self.sockets[player_id].close()
                 del self.sockets[player_id]
-            await self.publish_event(UserResponse(type="GameManagement", status=200, payload={"message": f"{player_id} left the game."}))
-            await self.publish_event(UserResponse(type="ScoreUpdate", status=200, payload=self.user_score_dict))
+            await self.publish_event(UserMessage(type="GameManagement", payload={"message": f"{player_id} left the game."}))
+            await self.publish_event(UserMessage(type="ScoreUpdate", payload=self.user_score_dict))
 
     async def update_score(self, player_id: str, score_delta: int):
         if player_id in self.players:
@@ -39,9 +39,9 @@ class BaseGame:
                 logging.info(f"{player_id} scored {score_delta} points.")
             elif score_delta < 0:
                 logging.info(f"{player_id} lost {-score_delta} points.")
-            await self.publish_event(UserResponse(type="ScoreUpdate", status=200, payload=self.user_score_dict))
+            await self.publish_event(UserMessage(type="ScoreUpdate", payload=self.user_score_dict))
 
-    async def publish_event(self, response: UserResponse):
+    async def publish_event(self, response: UserMessage):
         # Send event data to all connected players
         for player_id, websocket in self.sockets.items():
             try:
@@ -91,7 +91,7 @@ class FirstShot(BaseGame):
                 # Initiate a respawn for all players
                 self.all_respawn()
                 # Publish respawn notice
-                await self.publish_event(UserResponse(type="GameStateUpdate", status=200, payload={"GameState": "respawn"}))
+                await self.publish_event(UserMessage(type="GameStateUpdate", payload={"GameState": "respawn"}))
                 # Update score
                 await self.update_score(player_id, 10)
                 logging.info(f"{player_id} hit a shot")
@@ -101,8 +101,7 @@ class FirstShot(BaseGame):
                 # Initiate action for specified player
                 self.respawn_state[player_id] = False
                 # Send action notice
-                await self.sockets[player_id].send_json(dict(UserResponse(type="GameStateUpdate",
-                                                               status=200,
+                await self.sockets[player_id].send_json(dict(UserMessage(type="GameStateUpdate",
                                                                payload={"GameState": "action"})))
                 logging.info(f"{player_id} respawned")
             else:
