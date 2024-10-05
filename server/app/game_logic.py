@@ -9,7 +9,7 @@ from vision import predict, yolo_scoring, process_image
 
 class BaseGame:
     def __init__(self):
-        self.game_id = str(uuid.uuid4())
+        self.game_id = str(uuid.uuid4())[:6]
         self.players: Dict[str, Player] = {}
         self.sockets: Dict[str, WebSocket] = {}
 
