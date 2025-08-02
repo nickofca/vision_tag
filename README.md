@@ -18,12 +18,12 @@ Vision Tag transforms any smartphone or web browser into a live-action laser-tag
 
 ## Architecture
 
-$$$
+```
 [Mobile App] ─┐
               ├─► [FastAPI Server] ──► [Inference Engine (Mask R-CNN on GPU)]
 [Web App]  ─┘             │
                          └─► [Game State & Scoring]
-$$$
+```
 
 1. Clients capture camera frames and send them over WebSocket or HTTP  
 2. The server preprocesses images, runs the deep-learning model, and determines hit events  
@@ -44,43 +44,43 @@ $$$
 ## Installation
 
 1. **Clone the repo**  
-   $$$bash
+   ```bash
    git clone https://github.com/nickofca/vision_tag.git
    cd vision_tag
-   $$$
+   ```
 
 2. **Server**  
-   $$$bash
+   ```bash
    cd server
    cp .env.example .env
    pip install -r requirements.txt
    uvicorn app.main:app --reload
-   $$$
+   ```
 
 3. **Mobile (iOS)**  
-   $$$bash
+   ```bash
    cd mobile
    yarn install
    expo login
    expo start
    # When ready:
    expo build:ios
-   $$$
+   ```
 
 4. **Web**  
-   $$$bash
+   ```bash
    cd web/camera-game-app
    yarn install
    yarn start
-   $$$
+   ```
 
 5. **(Optional) Docker**  
-   $$$bash
+   ```bash
    # Build and run the server in Docker
    cd server
    docker build -t vision_tag_server .
    docker run --gpus all -p 8000:8000 --env-file .env vision_tag_server
-   $$$
+   ```
 
 ---
 
@@ -88,33 +88,33 @@ $$$
 
 Copy `server/.env.example` → `server/.env` and fill in any required values:
 
-$$$env
+```env
 # Example .env
 DATABASE_URL=…
 MODEL_ENDPOINT=…
 CUDA_VISIBLE_DEVICES=0
 # Add any other required variables
-$$$
+```
 
 ---
 
 ## Running & Testing
 
 - **Server**  
-  $$$bash
+  ```bash
   cd server
   uvicorn app.main:app --reload
-  $$$
+  ```
 - **Mobile**  
-  $$$bash
+  ```bash
   cd mobile
   expo start
-  $$$
+  ```
 - **Web**  
-  $$$bash
+  ```bash
   cd web/camera-game-app
   yarn start
-  $$$
+  ```
 
 ---
 
@@ -122,9 +122,9 @@ $$$
 
 1. Fork the repository  
 2. Create a branch:  
-   $$$bash
+   ```bash
    git checkout -b feature/YourFeature
-   $$$  
+   ```  
 3. Commit your changes  
 4. Push and open a pull request  
 
